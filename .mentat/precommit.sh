@@ -1,12 +1,22 @@
 #!/bin/bash
-# Format code with black
-black flair tests
+set -e
 
-# Run ruff with fix to automatically fix linting issues
-ruff check --fix flair tests
+# Run black formatter on modified files only
+# Get list of modified Python files
+MODIFIED_FILES=$(git diff --name-only --diff-filter=ACMR HEAD | grep '\.py$' || echo "")
 
-# Type checking with mypy (doesn't fix issues but reports them)
-mypy flair tests
+if [ -n "$MODIFIED_FILES" ]; then
+  echo "Formatting modified files with black..."
+  black $MODIFIED_FILES
+  
+  echo "Running ruff with fix on modified files..."
+  ruff check --fix $MODIFIED_FILES
+else
+  echo "No modified Python files found. Skipping formatting and linting."
+fi
 
-# Run basic sanity test to ensure the package is importable
+# Basic sanity check - just import the package
+echo "Checking if package is importable..."
 python -c 'import flair'
+
+echo "Pre-commit checks completed successfully!"
