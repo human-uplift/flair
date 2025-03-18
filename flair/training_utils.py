@@ -29,8 +29,16 @@ class Result:
         main_score: float,
         detailed_results: str,
         classification_report: Optional[dict] = None,
-        scores: Optional[dict] = None,
+        scores: dict = None,  # Required parameter despite default value
     ) -> None:
+        """Initialize Result with evaluation scores and details.
+        
+        Args:
+            main_score: The primary metric for the model's performance
+            detailed_results: String representation of detailed evaluation results
+            classification_report: Optional dictionary containing the classification report
+            scores: Dictionary of scores that must include 'loss' (required despite default value)
+        """
         classification_report = classification_report if classification_report is not None else {}
         assert scores is not None and "loss" in scores, "No loss provided."
 
