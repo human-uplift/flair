@@ -28,11 +28,10 @@ class Result:
         self,
         main_score: float,
         detailed_results: str,
+        scores: dict,
         classification_report: Optional[dict] = None,
-        scores: Optional[dict] = None,
     ) -> None:
-        classification_report = classification_report if classification_report is not None else {}
-        assert scores is not None and "loss" in scores, "No loss provided."
+        assert "loss" in scores, "No loss provided."
 
         self.main_score: float = main_score
         self.scores = scores
