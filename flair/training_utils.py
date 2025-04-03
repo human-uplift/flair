@@ -28,23 +28,23 @@ class Result:
         self,
         main_score: float,
         detailed_results: str,
+        scores: dict,
         classification_report: Optional[dict] = None,
-        scores: Optional[dict] = None,
     ) -> None:
-        classification_report = classification_report if classification_report is not None else {}
-        assert scores is not None and "loss" in scores, "No loss provided."
+        if "loss" not in scores:
+            raise ValueError("A loss value must be provided in the scores dictionary.")
 
         self.main_score: float = main_score
-        self.scores = scores
         self.detailed_results: str = detailed_results
-        self.classification_report = classification_report if classification_report is not None else {}
+        self.scores: dict = scores
+        self.classification_report: dict = classification_report if classification_report is not None else {}
 
     @property
-    def loss(self):
+    def loss(self) -> float:
         return self.scores["loss"]
 
     def __str__(self) -> str:
-        return f"{self.detailed_results!s}\nLoss: {self.loss}'"
+        return f"{self.detailed_results}\nLoss: {self.loss}"
 
 
 class MetricRegression:
