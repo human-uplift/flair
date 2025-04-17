@@ -353,6 +353,9 @@ class StaccatoTokenizer(Tokenizer):
         Returns:
             A list of tokens
         """
+        # Handle zero-width characters before tokenization
+        text = self._remove_zero_width_characters(text)
+        
         # Create a pattern that matches:
         # 1. Punctuation characters
         # 2. Number sequences
@@ -366,7 +369,7 @@ class StaccatoTokenizer(Tokenizer):
 
         # Filter out empty strings
         for part in parts:
-            if part:
+            if part and part.strip():  # Check if part is not empty and not just whitespace
                 # If part is punctuation, number, or kanji, add it directly
                 if re.fullmatch(pattern, part):
                     raw_tokens.append(part)
@@ -376,3 +379,22 @@ class StaccatoTokenizer(Tokenizer):
                     raw_tokens.extend(subparts)
 
         return raw_tokens
+        
+    @staticmethod
+    def _remove_zero_width_characters(text: str) -> str:
+        """
+        Remove zero-width and other invisible formatting characters from the text.
+        
+        Args:
+            text: The input text to process
+            
+        Returns:
+            Text with zero-width characters removed
+        """
+        text = text.replace("\u200c", "")  # ZERO WIDTH NON-JOINER
+        text = text.replace("\u200b", "")  # ZERO WIDTH SPACE
+        text = text.replace("\ufe0f", "")  # VARIATION SELECTOR-16
+        text = text.replace("\ufeff", "")  # ZERO WIDTH NO-BREAK SPACE
+        text = text.replace("\u2028", "")  # LINE SEPARATOR
+        text = text.replace("\u2029", "")  # PARAGRAPH SEPARATOR
+        return text
